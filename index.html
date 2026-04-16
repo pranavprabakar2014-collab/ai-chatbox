@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pranav Prabakar AI Chatbox</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: url('/static/lion.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: black;
+}
+
+/* fallback red */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: red;
+    z-index: -1;
+}
+
+h1 {
+    text-align: center;
+    padding: 10px;
+}
+
+/* chat area */
+#chat {
+    height: 82vh;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+/* messages */
+.message {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+/* input box */
+#inputBox {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+}
+
+input {
+    flex: 1;
+    padding: 15px;
+    background: black;
+    color: white;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    padding: 15px;
+    background: black;
+    color: white;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Pranav Prabakar AI Chatbox</h1>
+
+<div id="chat"></div>
+
+<div id="inputBox">
+    <input id="msg" placeholder="Type message..." onkeydown="if(event.key==='Enter') send()">
+    <button onclick="send()">Send</button>
+</div>
+
+<script>
+async function send() {
+    let input = document.getElementById("msg");
+    let text = input.value;
+
+    if(text.trim() === "") return;
+
+    let chat = document.getElementById("chat");
+
+    chat.innerHTML += `<div class="message"><b>You:</b> ${text}</div>`;
+
+    input.value = "";
+
+    let res = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: text})
+    });
+
+    let data = await res.json();
+
+    chat.innerHTML += `<div class="message"><b>AI:</b> ${data.reply}</div>`;
+
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
